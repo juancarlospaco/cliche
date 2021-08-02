@@ -1,2 +1,5 @@
-# cliche
-AutoMagic CLI argument parsing is cliche
+# CLIche
+
+- AutoMagic CLI argument parsing is so Cliché.
+
+![](cliche.jpg)
