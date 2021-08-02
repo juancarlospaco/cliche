@@ -13,7 +13,7 @@ import cliche
 ```
 
 <details>
-<summary> Using `parseopt` is so Cliché... </summary>
+<summary> Using parseopt is so Cliché... </summary>
 
 ```nim
 import std/parseopt
