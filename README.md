@@ -7,9 +7,9 @@
 
 # Examples
 
-Examples are also Cliché:
-
 ```nim
 import cliche
 
 ```
+
+Using `parseopt` is also Cliché...
