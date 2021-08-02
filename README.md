@@ -12,4 +12,12 @@ import cliche
 
 ```
 
-Using `parseopt` is also Cliché...
+<details>
+<summary> Using `parseopt` is so Cliché... </summary>
+
+```nim
+import std/parseopt
+
+```
+
+</details>
