@@ -1,4 +1,30 @@
-import std/[macros, strutils]
+import std/[macros, strutils, tables]
+
+proc explainHelp(params: NimNode):string =
+    var mappedTypes = {nnkCharLit: "char", nnkIntLit: "int", nnkInt8Lit: "int8", nnkInt16Lit: "int16",
+                       nnkInt32Lit: "int32", nnkInt64Lit: "int64",
+                       nnkUIntLit: "uint", nnkUInt8Lit: "uint8", nnkUInt16Lit: "uint16",
+                       nnkUInt32Lit: "uint32", nnkUInt64Lit: "uint64",
+                       nnkFloatLit: "float", nnkFloat32Lit: "float32", nnkFloat64Lit: "float64",
+                       nnkFloat128Lit: "float128", nnkStrLit: "string", nnkNilLit: "nil",
+                       nnkCallStrLit: "stringCall"}.toTable
+    var item, value:NimNode
+    result = "Options: \n\t --help    \n"
+    var tipo,defvalue:string
+
+    for element in params:
+        item = element[0]
+        value = element[1]
+
+        result = result & "\t -" & item.repr
+
+        if value.len > 1 and value.kind == nnkDotExpr:
+            result = result & "\t " & value[0].repr
+        else:
+            result = result & "\t " & mappedTypes[value.kind]
+
+        result = result & "\t " & "\t" & value.repr & "\n"
+
 
 macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[string] = "";
               sepa: static[char] = '='; prefix: static[char] = '-';) =
@@ -45,8 +71,12 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
     )
   ))
 
+  var apiExplained = explainHelp(variables)
+
   forBody.add(quote do:
-    if k == "help": quit(`helpMessage`, 0)
+    if k == "help":
+      echo `apiExplained`
+      quit(`helpMessage`,0)
   )
 
   forBody.add(
