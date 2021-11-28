@@ -1,30 +1,31 @@
-import std/[macros, strutils, tables]
+import std/[macros, strutils]
 
-proc explainHelp(params: NimNode):string =
-    var mappedTypes = {nnkCharLit: "char", nnkIntLit: "int", nnkInt8Lit: "int8", nnkInt16Lit: "int16",
-                       nnkInt32Lit: "int32", nnkInt64Lit: "int64",
-                       nnkUIntLit: "uint", nnkUInt8Lit: "uint8", nnkUInt16Lit: "uint16",
-                       nnkUInt32Lit: "uint32", nnkUInt64Lit: "uint64",
-                       nnkFloatLit: "float", nnkFloat32Lit: "float32", nnkFloat64Lit: "float64",
-                       nnkFloat128Lit: "float128", nnkStrLit: "string", nnkNilLit: "nil",
-                       nnkCallStrLit: "stringCall"}.toTable
-    var item, value:NimNode
-    result = "Options: \n\t --help    \n"
-    var tipo,defvalue:string
+proc explainHelp(params: NimNode, helpMessage: string):string =
+    result = "Options: \n\t--help    \n"
 
     for element in params:
-        item = element[0]
-        value = element[1]
+        result.add '\t'
+        result.add '-'
+        result.add element[0].repr
+        result.add '\t'
 
-        result = result & "\t -" & item.repr
-
-        if value.len > 1 and value.kind == nnkDotExpr:
-            result = result & "\t " & value[0].repr
+        if element[1].len > 1 and element[1].kind == nnkDotExpr:
+            result.add element[1][0].repr
         else:
-            result = result & "\t " & mappedTypes[value.kind]
+            result.add( case element[1].kind
+             of nnkCharLit: "char"
+             of nnkStrLit: "string"
+             of nnkIntLit .. nnkInt64Lit: "int"
+             of nnkUintLit .. nnkUInt64Lit: "uint"
+             of nnkFloatLit .. nnkFloat128Lit: "float"
+             else:"" )
 
-        result = result & "\t " & "\t" & value.repr & "\n"
+        result.add '\t'
+        result.add '\t'
+        result.add element.repr
+        result.add '\n'
 
+    result.add helpMessage
 
 macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[string] = "";
               sepa: static[char] = '='; prefix: static[char] = '-';) =
@@ -71,12 +72,11 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
     )
   ))
 
-  var apiExplained = explainHelp(variables)
+  var apiExplained = explainHelp(variables, helpMessage)
 
   forBody.add(quote do:
     if k == "help":
-      echo `apiExplained`
-      quit(`helpMessage`,0)
+      quit(`apiExplained`,0)
   )
 
   forBody.add(
