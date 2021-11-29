@@ -145,7 +145,7 @@ runnableExamples:
   doAssert v6 == cstring"z"
   doAssert missing == 42  ## missing is not in fake, fallback to default value 42.
 
-## * Auto-Generated `--help`:
+## * Auto-Generated `--help` (Can be parsed as TSV):
 ##
 ## .. code-block:: nim
 ##   $ example --help
