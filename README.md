@@ -333,8 +333,9 @@ cligenScope(clCfg)
 ```
 
 - Cligen can not compile for JavaScript targets.
-- Uses `cast`, `ref`, `nil`.
+- Uses `cast`, `ref`, `nil`, etc.
 - Run-time string concatenations `&`.
+- Several `for` loops.
 
 
 Lets use Cliche:
@@ -364,3 +365,4 @@ for v in items(commandLineParams()):
 - Cliche works for JavaScript targets (Use with nodejs package).
 - No `cast`, no `ref`, no `nil`.
 - Compile-time string ops.
+- 1 `for` loop.
