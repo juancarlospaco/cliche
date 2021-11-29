@@ -1,30 +1,30 @@
 import std/[macros, strutils]
 
-proc explainHelp(params: NimNode, helpMessage: string):string =
-    result = "Options: \n\t--help    \n"
-
+func explainHelp(params: NimNode; helpMessage: string; prefix, sepa: char): string =
+    result = "key\ttype\tdefault\n"
     for element in params:
-        result.add '\t'
-        result.add '-'
+        result.add prefix
+        result.add prefix
         result.add element[0].repr
+        result.add sepa
         result.add '\t'
-
         if element[1].len > 1 and element[1].kind == nnkDotExpr:
             result.add element[1][0].repr
         else:
-            result.add( case element[1].kind
-             of nnkCharLit: "char"
-             of nnkStrLit: "string"
-             of nnkIntLit .. nnkInt64Lit: "int"
-             of nnkUintLit .. nnkUInt64Lit: "uint"
-             of nnkFloatLit .. nnkFloat128Lit: "float"
-             else:"" )
-
+            result.add(
+              case element[1].kind
+              of nnkCharLit:                    "char"
+              of nnkIntLit .. nnkInt64Lit:      "int"
+              of nnkUintLit .. nnkUInt64Lit:    "uint"
+              of nnkFloatLit .. nnkFloat128Lit: "float"
+              else: "string"
+            )
         result.add '\t'
-        result.add '\t'
-        result.add element.repr
+        result.add element[^1].repr
         result.add '\n'
-
+    result.add prefix
+    result.add prefix
+    result.add "help\t?\t"
     result.add helpMessage
 
 macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[string] = "";
@@ -72,11 +72,11 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
     )
   ))
 
-  var apiExplained = explainHelp(variables, helpMessage)
+  let apiExplained: string = explainHelp(variables, helpMessage, prefix, sepa)
 
   forBody.add(quote do:
     if k == "help":
-      quit(`apiExplained`,0)
+      quit(`apiExplained`, 0)
   )
 
   forBody.add(
@@ -125,30 +125,37 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
               else:                     strip
             )(k_v[1])
         )
-
-
-
   newFor.add forBody
   result.add declarations
   result.add newFor
 
 
-expandMacros:
+runnableExamples:
+  import std/strutils
+  # Use https://nim-lang.github.io/Nim/os.html#commandLineParams
+  # let real = commandLineParams()
   let fake = @["--a=1", "--v_1=9.9", "--v2=1", "--v3=2", "--v4=X", "--v5=t", "--v6=z", "--help"]
   fake.getOpt (a: int.high, v_1: 3.14, v2: 9'u64, v3: -9'i64, v4: "a", v5: '4', v6: cstring"b", missing: 42)
-  echo a == 1
-  echo v_1 == 9.9
-  echo v2 == 1'u64
-  echo v3 == 2'i64
-  echo v4 == "X"
-  echo v5 == 't'
-  echo v6 == cstring"z"
-  echo missing == 42  # missing is not in fake, fallback to default value 42.
+  doAssert a == 1
+  doAssert v_1 == 9.9
+  doAssert v2 == 1'u64
+  doAssert v3 == 2'i64
+  doAssert v4 == "X"
+  doAssert v5 == 't'
+  doAssert v6 == cstring"z"
+  doAssert missing == 42  ## missing is not in fake, fallback to default value 42.
 
-
-
-#dumpastgen:
-  #let current = k_v[0][2..^1]
-
-
-
+## * Auto-Generated `--help`:
+##
+## .. code-block:: nim
+##   $ example --help
+##   key     type    default
+##   --a=    int     int.high
+##   --v_1=  float   3.14
+##   --v2=   uint    9'u64
+##   --v3=   int     -9'i64
+##   --v4=   string  "a"
+##   --v5=   char    '4'
+##   --v6=   string  cstring"b"
+##   --missing=      int     42
+##   --help  ?       Some Help Message Here!
