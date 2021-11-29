@@ -365,4 +365,4 @@ for v in items(commandLineParams()):
 - Cliche works for JavaScript targets (Use with nodejs package).
 - No `cast`, no `ref`, no `nil`.
 - Compile-time string ops.
-- 1 `for` loop.
+- **1** `for` loop.
