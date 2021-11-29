@@ -1,5 +1,32 @@
 import std/[macros, strutils]
 
+proc explainHelp(params: NimNode, helpMessage: string):string =
+    result = "Options: \n\t--help    \n"
+
+    for element in params:
+        result.add '\t'
+        result.add '-'
+        result.add element[0].repr
+        result.add '\t'
+
+        if element[1].len > 1 and element[1].kind == nnkDotExpr:
+            result.add element[1][0].repr
+        else:
+            result.add( case element[1].kind
+             of nnkCharLit: "char"
+             of nnkStrLit: "string"
+             of nnkIntLit .. nnkInt64Lit: "int"
+             of nnkUintLit .. nnkUInt64Lit: "uint"
+             of nnkFloatLit .. nnkFloat128Lit: "float"
+             else:"" )
+
+        result.add '\t'
+        result.add '\t'
+        result.add element.repr
+        result.add '\n'
+
+    result.add helpMessage
+
 macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[string] = "";
               sepa: static[char] = '='; prefix: static[char] = '-';) =
   doAssert variables.len > 0, "Argument must not be empty"
@@ -45,8 +72,11 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
     )
   ))
 
+  var apiExplained = explainHelp(variables, helpMessage)
+
   forBody.add(quote do:
-    if k == "help": quit(`helpMessage`, 0)
+    if k == "help":
+      quit(`apiExplained`,0)
   )
 
   forBody.add(
