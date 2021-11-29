@@ -336,6 +336,7 @@ cligenScope(clCfg)
 - Uses `cast`, `ref`, `nil`, etc.
 - Run-time string concatenations `&`.
 - Several `for` loops.
+- Several `import` and `export` from stdlib, several public symbols.
 
 
 Lets use Cliche:
@@ -366,3 +367,4 @@ for v in items(commandLineParams()):
 - No `cast`, no `ref`, no `nil`.
 - Compile-time string ops.
 - **1** `for` loop.
+- 2 `import`, 0 `export` from stdlib, 1 public symbol.
