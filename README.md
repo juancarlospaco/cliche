@@ -2,7 +2,7 @@
 
 - AutoMagic CLI argument parsing is so Cliché.
 
-![](cliche.jpg "Image is so Cliché")
+![](https://raw.githubusercontent.com/juancarlospaco/cliche/nim/cliche.jpg "Image is so Cliché")
 
 
 # Examples
