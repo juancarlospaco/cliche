@@ -79,12 +79,12 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
       quit(`apiExplained`, 0)
   )
 
-  forBody.add(
-    nnkIfStmt.newTree(nnkElifBranch.newTree(nnkInfix.newTree(newIdentNode"!=",
-      nnkCall.newTree(newIdentNode"len", newIdentNode"k"), newLit(2)),
-      nnkStmtList.newTree(nnkContinueStmt.newTree(newEmptyNode())))
-    )
-  )
+  # forBody.add(
+  #   nnkIfStmt.newTree(nnkElifBranch.newTree(nnkInfix.newTree(newIdentNode"!=",
+  #     nnkCall.newTree(newIdentNode"len", newIdentNode"k"), newLit(2)),
+  #     nnkStmtList.newTree(nnkContinueStmt.newTree(newEmptyNode())))
+  #   )
+  # )
 
   for key_value in variables:
     for item in key_value:
