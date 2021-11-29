@@ -36,7 +36,7 @@ $ example --help
  --v5=   char    '4'
  --v6=   string  cstring"b"
  --missing=      int     42
- --help  ?       Some Help Message Here!'
+ --help  ?       Some Help Message Here!
 
 $
 ```
