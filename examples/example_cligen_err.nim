@@ -1,4 +1,4 @@
-import std/macros, cligen
+import cligen
 block:
   template a(foo = 'x') = discard
   dispatch a
