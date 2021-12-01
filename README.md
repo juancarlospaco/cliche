@@ -337,7 +337,7 @@ cligenScope(clCfg)
 - Run-time string concatenations `&`.
 - Several `for` loops.
 - Several `import` and `export` from stdlib, several public symbols.
-- Wont work with `template`, `macro`, anonimous `func`.
+- [Wont work with `template`, `macro`, anonimous `func`.](https://github.com/juancarlospaco/cliche/blob/nim/examples/example_cligen_err.nim)
 
 
 Lets use Cliche:
