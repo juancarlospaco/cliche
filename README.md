@@ -337,6 +337,7 @@ cligenScope(clCfg)
 - Run-time string concatenations `&`.
 - Several `for` loops.
 - Several `import` and `export` from stdlib, several public symbols.
+- Wont work with `template`, `macro`, anonimous `func`.
 
 
 Lets use Cliche:
@@ -368,3 +369,4 @@ for v in items(commandLineParams()):
 - Compile-time string ops.
 - **1** `for` loop.
 - 2 `import`, 0 `export` from stdlib, 1 public symbol.
+- Works with `template`, `macro`, etc.
