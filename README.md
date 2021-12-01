@@ -338,6 +338,7 @@ cligenScope(clCfg)
 - Several `for` loops.
 - Several `import` and `export` from stdlib, several public symbols.
 - [Wont work with `template`, `macro`, anonimous `func`.](https://github.com/juancarlospaco/cliche/blob/nim/examples/example_cligen_err.nim)
+- Abbreviated CLI arguments (`--bar` is duplicated as `-b` too?).
 
 
 Lets use Cliche:
@@ -370,3 +371,4 @@ for v in items(commandLineParams()):
 - **1** `for` loop.
 - 2 `import`, 0 `export` from stdlib, 1 public symbol.
 - Works with `template`, `macro`, etc.
+- No support for abbreviated CLI arguments (`--foo` in CLI is `foo` in code).
