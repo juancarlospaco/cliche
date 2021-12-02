@@ -340,6 +340,7 @@ cligenScope(clCfg)
 - [Wont work with `template`, `macro`, anonimous `func`.](https://github.com/juancarlospaco/cliche/blob/nim/examples/example_cligen_err.nim)
 - Abbreviated CLI arguments (`--bar` is duplicated as `-b` too?).
 - [C Compilation warnings.](https://github.com/juancarlospaco/cliche/blob/nim/examples/cligen_compilation.md#c-compilation-warnings-in-cligen)
+- API enforces to use `proc`.
 
 
 Lets use Cliche:
@@ -373,3 +374,4 @@ for v in items(commandLineParams()):
 - 2 `import`, 0 `export` from stdlib, 1 public symbol.
 - Works with `template`, `macro`, etc.
 - No support for abbreviated CLI arguments (`--foo` in CLI is `foo` in code).
+- API just uses a variable.
