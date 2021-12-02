@@ -366,7 +366,7 @@ for v in items(commandLineParams()):
     foo = k_v[1][0]
 ```
 
-- Cliche works for JavaScript targets (Use with nodejs package).
+- Cliche works for JavaScript targets [(Use with nodejs package)](https://github.com/juancarlospaco/nodejs#alternative-stdlib-for-nim-for-nodejsjavascript-targets).
 - No `cast`, no `ref`, no `nil`, no `addr`, no unsafe code.
 - Compile-time string ops.
 - **1** `for` loop.
