@@ -374,4 +374,4 @@ for v in items(commandLineParams()):
 - 2 `import`, 0 `export` from stdlib, 1 public symbol.
 - Works with `template`, `macro`, etc.
 - No support for abbreviated CLI arguments (`--foo` in CLI is `foo` in code).
-- API just uses a variable.
+- API just uses variables.
