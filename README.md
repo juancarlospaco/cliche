@@ -339,6 +339,7 @@ cligenScope(clCfg)
 - Several `import` and `export` from stdlib, several public symbols.
 - [Wont work with `template`, `macro`, anonimous `func`.](https://github.com/juancarlospaco/cliche/blob/nim/examples/example_cligen_err.nim)
 - Abbreviated CLI arguments (`--bar` is duplicated as `-b` too?).
+- C Compilation warnings.
 
 
 Lets use Cliche:
