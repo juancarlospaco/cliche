@@ -103,24 +103,14 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
         forBody.add(quote do:
           if k == `literalParam`:
             `name` = (
-              when `value` is float32:  (proc (c: string): float32 = c.parseInt.float32)
-              elif `value` is float:    parseFloat
-              elif `value` is int8:     (proc (c: string):  int8 = c.parseInt.int8)
-              elif `value` is int16:    (proc (c: string): int16 = c.parseInt.int16)
-              elif `value` is int32:    (proc (c: string): int32 = c.parseInt.int32)
-              elif `value` is int64:    (proc (c: string): int64 = c.parseInt.int64)
-              elif `value` is int:      parseInt
-              elif `value` is uint8:    (proc (c: string):  uint8 = c.parseInt.uint8)
-              elif `value` is uint16:   (proc (c: string): uint16 = c.parseInt.uint16)
-              elif `value` is uint32:   (proc (c: string): uint32 = c.parseInt.uint32)
-              elif `value` is uint64:   (proc (c: string): uint64 = c.parseInt.uint64)
-              elif `value` is byte:     (proc (c: string): byte = c.parseInt.byte)
-              elif `value` is Positive: (proc (c: string): Positive = c.parseInt.Positive)
-              elif `value` is Natural:  (proc (c: string): Natural = c.parseInt.Natural)
-              elif `value` is char:     (proc (c: string): char = c[0])
-              elif `value` is uint:     parseUint
-              elif `value` is BiggestInt:  parseBiggestInt
-              elif `value` is BiggestUint: parseBiggestUint
+              when `value` is SomeSignedInt:
+                (proc (c:string): auto = typeof(`value`)(c.parseInt))
+              elif `value` is SomeUnsignedInt:
+                (proc (c:string): auto = typeof(`value`)(c.parseUInt))
+              elif `value` is SomeFloat:
+                (proc (c: string): auto = typeof(`value`)(c.parseFloat))
+              elif `value` is char:
+                (proc (c: string): char = c[0])
               elif `value` is cstring:  cstring
               else:                     strip
             )(k_v[1])
