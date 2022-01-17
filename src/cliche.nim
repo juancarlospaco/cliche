@@ -79,52 +79,40 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
       quit(`apiExplained`, 0)
   )
 
-  # forBody.add(
-  #   nnkIfStmt.newTree(nnkElifBranch.newTree(nnkInfix.newTree(newIdentNode"!=",
-  #     nnkCall.newTree(newIdentNode"len", newIdentNode"k"), newLit(2)),
-  #     nnkStmtList.newTree(nnkContinueStmt.newTree(newEmptyNode())))
-  #   )
-  # )
-
   for key_value in variables:
-    for item in key_value:
-      if item.kind == nnkIdent:
-        for c in item.strVal:
-          doAssert c in {'a'..'z', '0'..'9', '_'}, "Name must be ASCII Lowercase"
-        name = item
-      else:
-        doAssert item.kind != nnkNilLit, "Default value must not be static Nil"
-        value = item
-        declarations.add(  # var name = defaultValue
-          nnkVarSection.newTree(nnkIdentDefs.newTree(name, newEmptyNode(), value))
-        )  # Make all variable declarations before the for loop itself.
-        let literalParam = name.strVal  # --key
+    name = key_value[0]
+    value = key_value[1]
+    doAssert value.kind != nnkNilLit, "Default value must not be static Nil"
+    declarations.add(  # var name = defaultValue
+      nnkVarSection.newTree(nnkIdentDefs.newTree(name, newEmptyNode(), value))
+    )  # Make all variable declarations before the for loop itself.
 
-        forBody.add(quote do:
-          if k == `literalParam`:
-            `name` = (
-              when `value` is float32:  (proc (c: string): float32 = c.parseInt.float32)
-              elif `value` is float:    parseFloat
-              elif `value` is int8:     (proc (c: string):  int8 = c.parseInt.int8)
-              elif `value` is int16:    (proc (c: string): int16 = c.parseInt.int16)
-              elif `value` is int32:    (proc (c: string): int32 = c.parseInt.int32)
-              elif `value` is int64:    (proc (c: string): int64 = c.parseInt.int64)
-              elif `value` is int:      parseInt
-              elif `value` is uint8:    (proc (c: string):  uint8 = c.parseInt.uint8)
-              elif `value` is uint16:   (proc (c: string): uint16 = c.parseInt.uint16)
-              elif `value` is uint32:   (proc (c: string): uint32 = c.parseInt.uint32)
-              elif `value` is uint64:   (proc (c: string): uint64 = c.parseInt.uint64)
-              elif `value` is byte:     (proc (c: string): byte = c.parseInt.byte)
-              elif `value` is Positive: (proc (c: string): Positive = c.parseInt.Positive)
-              elif `value` is Natural:  (proc (c: string): Natural = c.parseInt.Natural)
-              elif `value` is char:     (proc (c: string): char = c[0])
-              elif `value` is uint:     parseUint
-              elif `value` is BiggestInt:  parseBiggestInt
-              elif `value` is BiggestUint: parseBiggestUint
-              elif `value` is cstring:  cstring
-              else:                     strip
-            )(k_v[1])
-        )
+    let literalParam = name.strVal
+    forBody.add(quote do:
+      if k == `literalParam`:
+        `name` = (
+          when `value` is float32:  (proc (c: string): float32 = c.parseInt.float32)
+          elif `value` is float:    parseFloat
+          elif `value` is int8:     (proc (c: string):  int8 = c.parseInt.int8)
+          elif `value` is int16:    (proc (c: string): int16 = c.parseInt.int16)
+          elif `value` is int32:    (proc (c: string): int32 = c.parseInt.int32)
+          elif `value` is int64:    (proc (c: string): int64 = c.parseInt.int64)
+          elif `value` is int:      parseInt
+          elif `value` is uint8:    (proc (c: string):  uint8 = c.parseInt.uint8)
+          elif `value` is uint16:   (proc (c: string): uint16 = c.parseInt.uint16)
+          elif `value` is uint32:   (proc (c: string): uint32 = c.parseInt.uint32)
+          elif `value` is uint64:   (proc (c: string): uint64 = c.parseInt.uint64)
+          elif `value` is byte:     (proc (c: string): byte = c.parseInt.byte)
+          elif `value` is Positive: (proc (c: string): Positive = c.parseInt.Positive)
+          elif `value` is Natural:  (proc (c: string): Natural = c.parseInt.Natural)
+          elif `value` is char:     (proc (c: string): char = c[0])
+          elif `value` is uint:     parseUint
+          elif `value` is BiggestInt:  parseBiggestInt
+          elif `value` is BiggestUint: parseBiggestUint
+          elif `value` is cstring:  cstring
+          else:                     strip
+        )(k_v[1])
+    )
   newFor.add forBody
   result.add declarations
   result.add newFor

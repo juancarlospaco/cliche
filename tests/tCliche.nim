@@ -27,5 +27,11 @@ suite "Cliche CLI parsing arguments":
     @[&"--baz={high uint64}",
       &"--foobar={low uint64}"].getOpt (baz: 0u64, foobar: 0u64)
 
-    doAssert foo == high int64
-    doAssert bar == low int64
+    doAssert baz == high uint64
+    doAssert foobar == low uint64
+
+  test "parse const":
+    const val = 0
+    @["--foo=1"].getOpt (bar: val)
+
+    doAssert bar == 0
