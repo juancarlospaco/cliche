@@ -1,4 +1,11 @@
-import cliche, std/[strutils, unittest, strformat]
+import cliche, std/[strutils, unittest, strformat, math]
+
+proc testTypeBounds(t: typedesc) =
+  @[&"--foo={high t}",
+    &"--bar={low t}"].getOpt (foo: t(0), bar: t(0))
+
+  doAssert foo == high t
+  doAssert bar == low t
 
 suite "Cliche CLI parsing arguments":
   test "parse char":
@@ -17,15 +24,14 @@ suite "Cliche CLI parsing arguments":
     doAssert baz is uint64
     doAssert baz == 3
 
-  test "parse big and small ints":
-    @[&"--foo={high int64}",
-      &"--bar={low int64}"].getOpt (foo: 0i64, bar: 0i64)
+  test "parse simple floats":
+    @["--foo=4.2", "--bar=9.7"].getOpt (foo: 0f32, bar: 0f64)
 
-    doAssert foo == high int64
-    doAssert bar == low int64
+    doAssert almostEqual(foo, 4.2)
+    doAssert almostEqual(bar, 9.7)
 
-    @[&"--baz={high uint64}",
-      &"--foobar={low uint64}"].getOpt (baz: 0u64, foobar: 0u64)
-
-    doAssert foo == high int64
-    doAssert bar == low int64
+  test "parse big and small numbers":
+    testTypeBounds int64
+    testTypeBounds uint64
+    testTypeBounds float32
+    testTypeBounds float64
