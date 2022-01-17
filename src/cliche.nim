@@ -109,7 +109,6 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
                 (proc (c:string): auto = typeof(`value`)(c.parseUInt))
               elif `value` is SomeFloat:
                 (proc (c: string): auto = typeof(`value`)(c.parseFloat))
-              elif `value` is bool: parseBool
               elif `value` is char:
                 (proc (c: string): char = c[0])
               elif `value` is cstring:  cstring
