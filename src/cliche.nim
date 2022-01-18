@@ -81,8 +81,11 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
 
   for key_value in variables:
     name = key_value[0]
+    doAssert validIdentifier name.strVal, "Names must be valid identifiers"
+
     value = key_value[1]
     doAssert value.kind != nnkNilLit, "Default value must not be static Nil"
+
     declarations.add(  # var name = defaultValue
       nnkVarSection.newTree(nnkIdentDefs.newTree(name, newEmptyNode(), value))
     )  # Make all variable declarations before the for loop itself.
