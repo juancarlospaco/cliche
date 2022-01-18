@@ -79,42 +79,34 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
       quit(`apiExplained`, 0)
   )
 
-  # forBody.add(
-  #   nnkIfStmt.newTree(nnkElifBranch.newTree(nnkInfix.newTree(newIdentNode"!=",
-  #     nnkCall.newTree(newIdentNode"len", newIdentNode"k"), newLit(2)),
-  #     nnkStmtList.newTree(nnkContinueStmt.newTree(newEmptyNode())))
-  #   )
-  # )
-
   for key_value in variables:
-    for item in key_value:
-      if item.kind == nnkIdent:
-        for c in item.strVal:
-          doAssert c in {'a'..'z', '0'..'9', '_'}, "Name must be ASCII Lowercase"
-        name = item
-      else:
-        doAssert item.kind != nnkNilLit, "Default value must not be static Nil"
-        value = item
-        declarations.add(  # var name = defaultValue
-          nnkVarSection.newTree(nnkIdentDefs.newTree(name, newEmptyNode(), value))
-        )  # Make all variable declarations before the for loop itself.
-        let literalParam = name.strVal  # --key
+    name = key_value[0]
+    doAssert validIdentifier name.strVal, "Names must be valid identifiers"
 
-        forBody.add(quote do:
-          if k == `literalParam`:
-            `name` = (
-              when `value` is SomeSignedInt:
-                (proc (c:string): auto = typeof(`value`)(c.parseInt))
-              elif `value` is SomeUnsignedInt:
-                (proc (c:string): auto = typeof(`value`)(c.parseUInt))
-              elif `value` is SomeFloat:
-                (proc (c: string): auto = typeof(`value`)(c.parseFloat))
-              elif `value` is char:
-                (proc (c: string): char = c[0])
-              elif `value` is cstring:  cstring
-              else:                     strip
-            )(k_v[1])
-        )
+    value = key_value[1]
+    doAssert value.kind != nnkNilLit, "Default value must not be static Nil"
+
+    declarations.add(  # var name = defaultValue
+      nnkVarSection.newTree(nnkIdentDefs.newTree(name, newEmptyNode(), value))
+    )  # Make all variable declarations before the for loop itself.
+
+    let literalParam = name.strVal
+    forBody.add(quote do:
+      if k == `literalParam`:
+        `name` = (
+          when `value` is SomeSignedInt:
+            (proc (c:string): auto = typeof(`value`)(c.parseInt))
+          elif `value` is SomeUnsignedInt:
+            (proc (c:string): auto = typeof(`value`)(c.parseUInt))
+          elif `value` is SomeFloat:
+            (proc (c: string): auto = typeof(`value`)(c.parseFloat))
+          elif `value` is char:
+            (proc (c: string): char = c[0])
+          elif `value` is cstring:  cstring
+          else:                     strip
+        )(k_v[1])
+    )
+
   newFor.add forBody
   result.add declarations
   result.add newFor
