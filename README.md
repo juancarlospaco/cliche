@@ -375,3 +375,8 @@ for v in items(commandLineParams()):
 - Works with `template`, `macro`, etc.
 - No support for abbreviated CLI arguments (`--foo` in CLI is `foo` in code).
 - API just uses variables.
+
+
+# Stars
+
+![](https://starchart.cc/juancarlospaco/cliche.svg)
