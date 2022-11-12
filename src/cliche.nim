@@ -104,7 +104,7 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
           elif `value` is char:
             (proc (c: string): char = c[0])
           elif `value` is bool:
-            (proc (c: string): auto = typeof(`value`)(c.parseBool))
+            (proc (c: string): bool = c.parseBool)
           elif `value` is cstring:  cstring
           else:                     strip
         )(k_v[1])
