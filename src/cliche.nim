@@ -17,6 +17,7 @@ func explainHelp(params: NimNode; helpMessage: string; prefix, sepa: char): stri
               of nnkIntLit .. nnkInt64Lit:      "int"
               of nnkUintLit .. nnkUInt64Lit:    "uint"
               of nnkFloatLit .. nnkFloat128Lit: "float"
+              elif element[1].kind == nnkIdent and (element[1].eqIdent("true") or element[1].eqIdent("false")): "bool"
               else: "string"
             )
         result.add '\t'
@@ -102,6 +103,8 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
             (proc (c: string): auto = typeof(`value`)(c.parseFloat))
           elif `value` is char:
             (proc (c: string): char = c[0])
+          elif `value` is bool:
+            (proc (c: string): bool = c.parseBool)
           elif `value` is cstring:  cstring
           else:                     strip
         )(k_v[1])
@@ -116,8 +119,8 @@ runnableExamples:
   import std/strutils
   # Use https://nim-lang.github.io/Nim/os.html#commandLineParams
   # let real = commandLineParams()
-  let fake = @["--a=1", "--v_1=9.9", "--v2=1", "--v3=2", "--v4=X", "--v5=t", "--v6=z", "--help"]
-  fake.getOpt (a: int.high, v_1: 3.14, v2: 9'u64, v3: -9'i64, v4: "a", v5: '4', v6: cstring"b", missing: 42)
+  let fake = @["--a=1", "--v_1=9.9", "--v2=1", "--v3=2", "--v4=X", "--v5=t", "--v6=z", "--v7=true", "--help"]
+  fake.getOpt (a: int.high, v_1: 3.14, v2: 9'u64, v3: -9'i64, v4: "a", v5: '4', v6: cstring"b", v7: false, missing: 42)
   doAssert a == 1
   doAssert v_1 == 9.9
   doAssert v2 == 1'u64
@@ -125,6 +128,7 @@ runnableExamples:
   doAssert v4 == "X"
   doAssert v5 == 't'
   doAssert v6 == cstring"z"
+  doAssert v7 == true
   doAssert missing == 42  ## missing is not in fake, fallback to default value 42.
 
 ## * Auto-Generated `--help` (Can be parsed as TSV):
