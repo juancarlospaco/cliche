@@ -393,3 +393,4 @@ for v in items(commandLineParams()):
 :star: [@Infinitybeond1](https://github.com/Infinitybeond1 '2022-07-20')	
 :star: [@kamilchm](https://github.com/kamilchm '2022-08-17')	
 :star: [@pedrovhb](https://github.com/pedrovhb '2022-08-25')	
+:star: [@foxoman](https://github.com/foxoman '2022-11-16')	
