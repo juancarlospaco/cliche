@@ -1,5 +1,6 @@
 import std/[macros, strutils]
 
+
 func explainHelp(params: NimNode; helpMessage: string; prefix, sepa: char): string =
     result = "key\ttype\tdefault\n"
     for element in params:
@@ -17,7 +18,7 @@ func explainHelp(params: NimNode; helpMessage: string; prefix, sepa: char): stri
               of nnkIntLit .. nnkInt64Lit:      "int"
               of nnkUintLit .. nnkUInt64Lit:    "uint"
               of nnkFloatLit .. nnkFloat128Lit: "float"
-              elif element[1].kind == nnkIdent and (element[1].eqIdent("true") or element[1].eqIdent("false")): "bool"
+              elif element[1].kind == nnkIdent and (element[1].eqIdent"true" or element[1].eqIdent"false"): "bool"
               else: "string"
             )
         result.add '\t'
@@ -27,6 +28,16 @@ func explainHelp(params: NimNode; helpMessage: string; prefix, sepa: char): stri
     result.add prefix
     result.add "help\t?\t"
     result.add helpMessage
+
+
+macro unrolledStringVsSymbolComparisonImpl(simbol: typed; value: static[string]): untyped =
+  template chainIt(a, b) = (a = nnkInfix.newTree(newIdentNode"and", a, b))
+  result = newStmtList()
+  result.add nnkInfix.newTree(newIdentNode"==", nnkDotExpr.newTree(simbol, newIdentNode"len"), newLit(value.len))
+  var conditionals = newSeqOfCap[NimNode](value.len)
+  for i in 0 ..< value.len: conditionals.add nnkInfix.newTree(newIdentNode"==", nnkBracketExpr.newTree(simbol, newLit i), newLit value[i])
+  for conditional in conditionals: chainIt result, conditional
+
 
 macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[string] = "";
               sepa: static[char] = '='; prefix: static[char] = '-';) =
@@ -93,7 +104,7 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
 
     let literalParam = name.strVal
     forBody.add(quote do:
-      if k == `literalParam`:
+      if unrolledStringVsSymbolComparisonImpl(k, `literalParam`):
         `name` = (
           when `value` is Positive:
             (proc (c: string): Positive = c.parseInt.Positive)
@@ -126,7 +137,8 @@ runnableExamples:
   # Use https://nim-lang.github.io/Nim/os.html#commandLineParams
   # let real = commandLineParams()
   let fake = @["--a=1", "--v_1=9.9", "--v2=1", "--v3=2", "--v4=X", "--v5=t", "--v6=z", "--v7=true", "--help"]
-  fake.getOpt (a: int.high, v_1: 3.14, v2: 9'u64, v3: -9'i64, v4: "a", v5: '4', v6: cstring"b", v7: false, missing: 42)
+  expandMacros:
+    fake.getOpt (a: int.high, v_1: 3.14, v2: 9'u64, v3: -9'i64, v4: "a", v5: '4', v6: cstring"b", v7: false, missing: 42)
   doAssert a == 1
   doAssert v_1 == 9.9
   doAssert v2 == 1'u64
@@ -151,7 +163,6 @@ runnableExamples:
 ##   --v6=   string  cstring"b"
 ##   --missing=      int     42
 ##   --help  ?       Some Help Message Here!
-
 
 runnableExamples:
   import std/strutils
