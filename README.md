@@ -360,10 +360,10 @@ for v in items(commandLineParams()):
   let k_v = split(v, '=', 1)
   if not(k_v[0][0] == '-') or not(k_v[0][1] == '-'):
     continue
-  let k = k_v[0][2 .. BackwardsIndex(1)]
-  if k == "help":
+  let k = k_v[0][2 .. 1.BackwardsIndex]
+  if k.len == 4 and k[0] == 'h' and k[1] == 'e' and k[2] == 'l' and k[3] == 'p':
     quit("key\ttype\tdefault\n--foo=\tchar\t\'x\'\n--help\t?\t", 0)
-  if k == "foo":
+  if k.len == 3 and k[0] == 'f' and k[1] == 'o' and k[2] == 'o':
     foo = k_v[1][0]
 ```
 
