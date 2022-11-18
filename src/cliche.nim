@@ -52,30 +52,19 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
   result = newStmtList()
   newFor.add ident"v"
   newFor.add source  # for v in source:
+  forBody.add(       #   if v.len < 3 or v[0] != '-'  or v[1] != '-': continue
+    nnkIfStmt.newTree(nnkElifBranch.newTree(nnkInfix.newTree(newIdentNode"or", nnkInfix.newTree(newIdentNode"or", nnkInfix.newTree(
+      newIdentNode"<", nnkDotExpr.newTree(newIdentNode"v", newIdentNode"len"), newLit(3)), nnkInfix.newTree(newIdentNode"!=", nnkBracketExpr.newTree(newIdentNode"v", newLit(0)), newLit('-'))),
+      nnkInfix.newTree(newIdentNode"!=", nnkBracketExpr.newTree(newIdentNode"v", newLit(1)), newLit('-'))), nnkStmtList.newTree(nnkContinueStmt.newTree(newEmptyNode())))
+    )
+  )
+
   forBody.add(       #   let k_v = split(v, '=', 1)
     nnkLetSection.newTree(nnkIdentDefs.newTree(newIdentNode"k_v", newEmptyNode(),
       nnkCall.newTree(newIdentNode"split", newIdentNode"v", newLit(sepa), newLit(1))
     ))  # Very likely it never needs >2 items in the seq[string] of k_v anyway.
   )
 
-  forBody.add(  # if k_v[0][0] != '-' or k_v[0][1] != '-': continue
-    nnkIfStmt.newTree(nnkElifBranch.newTree(nnkInfix.newTree(
-        newIdentNode"or",
-        nnkInfix.newTree(newIdentNode"!=",
-        nnkBracketExpr.newTree(nnkBracketExpr.newTree(newIdentNode"k_v", newLit(0)), newLit(0)),
-        newLit('-')
-        ),
-        nnkInfix.newTree(
-          newIdentNode"!=",
-          nnkBracketExpr.newTree(nnkBracketExpr.newTree(newIdentNode"k_v", newLit(0)), newLit(1)),
-          newLit('-')
-        )
-      ),
-      nnkStmtList.newTree(nnkContinueStmt.newTree(newEmptyNode()))
-    )
-  )
-
-  )
   forBody.add(  # let k = k_v[0][2..^1]
     nnkLetSection.newTree(nnkIdentDefs.newTree(newIdentNode"k", newEmptyNode(),
       nnkBracketExpr.newTree(nnkBracketExpr.newTree(newIdentNode"k_v", newLit(0)),
@@ -132,12 +121,14 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
   result.add newFor
 
 
-runnableExamples:
+# runnableExamples:
+when isMainModule:
   import std/strutils
   # Use https://nim-lang.github.io/Nim/os.html#commandLineParams
   # let real = commandLineParams()
   let fake = @["--a=1", "--v_1=9.9", "--v2=1", "--v3=2", "--v4=X", "--v5=t", "--v6=z", "--v7=true", "--help"]
-  fake.getOpt (a: int.high, v_1: 3.14, v2: 9'u64, v3: -9'i64, v4: "a", v5: '4', v6: cstring"b", v7: false, missing: 42)
+  expandMacros:
+    fake.getOpt (a: int.high, v_1: 3.14, v2: 9'u64, v3: -9'i64, v4: "a", v5: '4', v6: cstring"b", v7: false, missing: 42)
   doAssert a == 1
   doAssert v_1 == 9.9
   doAssert v2 == 1'u64
