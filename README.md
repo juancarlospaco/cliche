@@ -375,22 +375,23 @@ for v in items(commandLineParams()):
 - Works with `template`, `macro`, etc.
 - No support for abbreviated CLI arguments (`--foo` in CLI is `foo` in code).
 - API just uses variables.
+- Supports `Positive`, `Natural`, `byte`.
 
 
 # Stars
 
 ![](https://starchart.cc/juancarlospaco/cliche.svg)
-:star: [@juancarlospaco](https://github.com/juancarlospaco '2022-02-16')	
-:star: [@nikitavoloboev](https://github.com/nikitavoloboev '2022-02-16')	
-:star: [@zargot](https://github.com/zargot '2022-02-22')	
-:star: [@artemklevtsov](https://github.com/artemklevtsov '2022-02-23')	
-:star: [@AndrielFR](https://github.com/AndrielFR '2022-02-27')	
-:star: [@jaco-codexorbis](https://github.com/jaco-codexorbis '2022-03-20')	
-:star: [@nonimportant](https://github.com/nonimportant '2022-04-03')	
-:star: [@hamidb80](https://github.com/hamidb80 '2022-05-07')	
-:star: [@bichanna](https://github.com/bichanna '2022-05-07')	
-:star: [@hugosenari](https://github.com/hugosenari '2022-06-01')	
-:star: [@Infinitybeond1](https://github.com/Infinitybeond1 '2022-07-20')	
-:star: [@kamilchm](https://github.com/kamilchm '2022-08-17')	
-:star: [@pedrovhb](https://github.com/pedrovhb '2022-08-25')	
-:star: [@foxoman](https://github.com/foxoman '2022-11-16')	
+:star: [@juancarlospaco](https://github.com/juancarlospaco '2022-02-16')
+:star: [@nikitavoloboev](https://github.com/nikitavoloboev '2022-02-16')
+:star: [@zargot](https://github.com/zargot '2022-02-22')
+:star: [@artemklevtsov](https://github.com/artemklevtsov '2022-02-23')
+:star: [@AndrielFR](https://github.com/AndrielFR '2022-02-27')
+:star: [@jaco-codexorbis](https://github.com/jaco-codexorbis '2022-03-20')
+:star: [@nonimportant](https://github.com/nonimportant '2022-04-03')
+:star: [@hamidb80](https://github.com/hamidb80 '2022-05-07')
+:star: [@bichanna](https://github.com/bichanna '2022-05-07')
+:star: [@hugosenari](https://github.com/hugosenari '2022-06-01')
+:star: [@Infinitybeond1](https://github.com/Infinitybeond1 '2022-07-20')
+:star: [@kamilchm](https://github.com/kamilchm '2022-08-17')
+:star: [@pedrovhb](https://github.com/pedrovhb '2022-08-25')
+:star: [@foxoman](https://github.com/foxoman '2022-11-16')
