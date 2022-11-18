@@ -137,8 +137,7 @@ runnableExamples:
   # Use https://nim-lang.github.io/Nim/os.html#commandLineParams
   # let real = commandLineParams()
   let fake = @["--a=1", "--v_1=9.9", "--v2=1", "--v3=2", "--v4=X", "--v5=t", "--v6=z", "--v7=true", "--help"]
-  expandMacros:
-    fake.getOpt (a: int.high, v_1: 3.14, v2: 9'u64, v3: -9'i64, v4: "a", v5: '4', v6: cstring"b", v7: false, missing: 42)
+  fake.getOpt (a: int.high, v_1: 3.14, v2: 9'u64, v3: -9'i64, v4: "a", v5: '4', v6: cstring"b", v7: false, missing: 42)
   doAssert a == 1
   doAssert v_1 == 9.9
   doAssert v2 == 1'u64
