@@ -357,9 +357,8 @@ Expands to:
 ```nim
 var foo = 'x'
 for v in commandLineParams():
+  if v.len < 3 or v[0] != '-' or v[1] != '-': continue
   let k_v = split(v, '=', 1)
-  if not(k_v[0][0] == '-') or not(k_v[0][1] == '-'):
-    continue
   let k = k_v[0][2 .. 1.BackwardsIndex]
   if k.len == 4 and k[0] == 'h' and k[1] == 'e' and k[2] == 'l' and k[3] == 'p':
     quit("key\ttype\tdefault\n--foo=\tchar\t\'x\'\n--help\t?\t", 0)
