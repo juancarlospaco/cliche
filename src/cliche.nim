@@ -76,7 +76,7 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
   let apiExplained: string = explainHelp(variables, helpMessage, prefix, sepa)
 
   forBody.add(quote do:
-    if k == "help":
+    if k.len == 4 and k[0] == 'h' and k[1] == 'e' and k[2] == 'l' and k[3] == 'p':
       quit(`apiExplained`, 0)
   )
 
@@ -95,16 +95,22 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
     forBody.add(quote do:
       if k == `literalParam`:
         `name` = (
-          when `value` is SomeSignedInt:
-            (proc (c:string): auto = typeof(`value`)(c.parseInt))
-          elif `value` is SomeUnsignedInt:
-            (proc (c:string): auto = typeof(`value`)(c.parseUInt))
-          elif `value` is SomeFloat:
-            (proc (c: string): auto = typeof(`value`)(c.parseFloat))
+          when `value` is Positive:
+            (proc (c: string): Positive = c.parseInt.Positive)
+          elif `value` is Natural:
+            (proc (c: string): Natural = c.parseInt.Natural)
+          elif `value` is byte:
+            (proc (c: string): byte = c.parseInt.byte)
           elif `value` is char:
             (proc (c: string): char = c[0])
           elif `value` is bool:
             (proc (c: string): bool = c.parseBool)
+          elif `value` is SomeSignedInt:
+            (proc (c:string): typeof(`value`) = typeof(`value`)(c.parseInt))
+          elif `value` is SomeUnsignedInt:
+            (proc (c:string): typeof(`value`) = typeof(`value`)(c.parseUInt))
+          elif `value` is SomeFloat:
+            (proc (c: string): typeof(`value`) = typeof(`value`)(c.parseFloat))
           elif `value` is cstring:  cstring
           else:                     strip
         )(k_v[1])
