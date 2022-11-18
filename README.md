@@ -356,7 +356,7 @@ Expands to:
 
 ```nim
 var foo = 'x'
-for v in items(commandLineParams()):
+for v in commandLineParams():
   let k_v = split(v, '=', 1)
   if not(k_v[0][0] == '-') or not(k_v[0][1] == '-'):
     continue
