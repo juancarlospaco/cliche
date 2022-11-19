@@ -18,7 +18,6 @@ func explainHelp(params: NimNode; helpMessage: string; prefix, sepa: char): stri
               of nnkIntLit .. nnkInt64Lit:      "int"
               of nnkUintLit .. nnkUInt64Lit:    "uint"
               of nnkFloatLit .. nnkFloat128Lit: "float"
-              of nnkPrefix:                     "BackwardsIndex"
               elif element[1].kind == nnkIdent and (element[1].eqIdent"true" or element[1].eqIdent"false"): "bool"
               else: "string"
             )
@@ -124,7 +123,6 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
           elif `value` is BiggestUInt:     BiggestUInt(val.parseUint)
           elif `value` is BiggestInt:      BiggestInt(val.parseInt)
           elif `value` is BiggestFloat:    BiggestFloat(val.parseFloat)
-          elif `value` is BackwardsIndex:  BackwardsIndex(val.parseInt)
           elif `value` is byte:            byte(val.parseInt)
           elif `value` is char:            char(val[0])
           elif `value` is cfloat:          cfloat(val.parseFloat)
@@ -147,18 +145,39 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
 runnableExamples:
   import std/strutils
   # Use https://nim-lang.github.io/Nim/os.html#commandLineParams
-  # let real = commandLineParams()
-  let fake = @["--a=1", "--v_1=9.9", "--v2=1", "--v3=2", "--v4=X", "--v5=t", "--v6=z", "--v7=true", "--help"]
-  fake.getOpt (a: int.high, v_1: 3.14, v2: 9'u64, v3: -9'i64, v4: "a", v5: '4', v6: cstring"b", v7: false, missing: 42)
-  doAssert a == 1
-  doAssert v_1 == 9.9
-  doAssert v2 == 1'u64
-  doAssert v3 == 2'i64
-  doAssert v4 == "X"
-  doAssert v5 == 't'
-  doAssert v6 == cstring"z"
-  doAssert v7 == true
-  doAssert missing == 42  ## missing is not in fake, fallback to default value 42.
+  block:
+    # let real = commandLineParams()
+    let fake = @["--a=1", "--v_1=9.9", "--v2=1", "--v3=2", "--v4=X", "--v5=t", "--v6=z", "--v7=true", "--help"]
+    fake.getOpt (a: int.high, v_1: 3.14, v2: 9'u64, v3: -9'i64, v4: "a", v5: '4', v6: cstring"b", v7: false, missing: 42)
+    doAssert a == 1
+    doAssert v_1 == 9.9
+    doAssert v2 == 1'u64
+    doAssert v3 == 2'i64
+    doAssert v4 == "X"
+    doAssert v5 == 't'
+    doAssert v6 == cstring"z"
+    doAssert v7 == true
+    doAssert missing == 42  ## missing is not in fake, fallback to default value 42.
+  block:
+    @["--a=z"].getOpt (a: 'x')
+    doAssert a is char and a == 'z'
+    @["--foo=1", "--bar=2", "--baz=3"].getOpt (foo: 0, bar: 0.int32, baz: 0.uint64)
+    doAssert foo is int and foo == 1
+    doAssert bar is int32 and bar == 2
+    doAssert baz is uint64 and baz == 3
+  block:
+    type Food = enum PIZZA, TACO  # Enum from CLI.
+    @["--food=PIZZA"].getOpt (food: TACO)
+    doAssert food is Food and food == PIZZA
+  block:
+    let fake = @["--a=false", "--b=5", "--c=1", "--d=2.0", "--e=3", "--f=128"]
+    fake.getOpt (a: true, b: 9.Positive, c: 5.cint, d: 0.0.float32, e: 0.Natural, f: 255.byte)
+    doAssert a == false
+    doAssert b == 5.Positive
+    doAssert c == 1.cint
+    doAssert d == 2.0.float32
+    doAssert e == 3.Natural
+    doAssert f == 128.byte
 
 ## * Auto-Generated `--help` (Can be parsed as TSV):
 ##
@@ -174,18 +193,3 @@ runnableExamples:
 ##   --v6=   string  cstring"b"
 ##   --missing=      int     42
 ##   --help  ?       Some Help Message Here!
-
-runnableExamples:
-  import std/strutils
-  @["--a=z"].getOpt (a: 'x')
-  doAssert a is char and a == 'z'
-  @["--foo=1", "--bar=2", "--baz=3"].getOpt (foo: 0, bar: 0.int32, baz: 0.uint64)
-  doAssert foo is int and foo == 1
-  doAssert bar is int32 and bar == 2
-  doAssert baz is uint64 and baz == 3
-
-runnableExamples:
-  import std/strutils
-  type Food = enum PIZZA, TACO  # Enum from CLI.
-  @["--food=PIZZA"].getOpt (food: TACO)
-  doAssert food is Food and food == PIZZA
