@@ -357,13 +357,21 @@ Expands to:
 ```nim
 var foo = 'x'
 for v in commandLineParams():
-  if v.len < 3 or v[0] != '-' or v[1] != '-': continue
-  let k_v = split(v, '=', 1)
-  let k = k_v[0][2 .. 1.BackwardsIndex]
-  if k.len == 4 and k[0] == 'h' and k[1] == 'e' and k[2] == 'l' and k[3] == 'p':
-    quit("key\ttype\tdefault\n--foo=\tchar\t\'x\'\n--help\t?\t", 0)
+  var sepPos: int
+  var k, b: string
+  if not(v.len > 3) or v[0] != '-'  or v[1] != '-': continue
+  if v.len == 6 and v[0] == 'h' and v[1] == 'e' and v[2] == 'l' and v[3] == 'p':
+    quit(apiExplained, 0)
+  if len(v) == 8 and v[2] == 'x' and v[3] == 'd' and v[4] == 'e' and v[5] == 'b' and v[6] == 'u' and v[7] == 'g':
+    quit(debuginfos, 0)
+  for x in 2 .. v.len:
+    if v[x] == '=':
+      sepPos = x
+      break
+  k = v[2 ..< sepPos]
+  b = v[sepPos .. ^1]
   if k.len == 3 and k[0] == 'f' and k[1] == 'o' and k[2] == 'o':
-    foo = k_v[1][0]
+    foo = char(b[0])
 ```
 
 - Cliche works for JavaScript targets [(Use with nodejs package)](https://github.com/juancarlospaco/nodejs#alternative-stdlib-for-nim-for-nodejsjavascript-targets).
@@ -374,7 +382,7 @@ for v in commandLineParams():
 - Works with `template`, `macro`, etc.
 - No support for abbreviated CLI arguments (`--foo` in CLI is `foo` in code).
 - API just uses variables.
-- Supports `Positive`, `Natural`, `byte`.
+- Supports `enum`, `Positive`, `Natural`, `BiggestUInt`, `BiggestInt`, `BiggestFloat`, `BackwardsIndex`, `byte`, `cint`, `cfloat`.
 
 
 # Stars
