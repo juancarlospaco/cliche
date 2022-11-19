@@ -147,9 +147,10 @@ runnableExamples:
   import std/strutils
   # Use https://nim-lang.github.io/Nim/os.html#commandLineParams
   block:
+    type Food = enum PIZZA, TACO  # Enum from CLI.
     # let real = commandLineParams()
-    let fake = @["--a=1", "--v_1=9.9", "--v2=1", "--v3=2", "--v4=X", "--v5=t", "--v6=z", "--v7=true", "--help"]
-    fake.getOpt (a: int.high, v_1: 3.14, v2: 9'u64, v3: -9'i64, v4: "a", v5: '4', v6: cstring"b", v7: false, missing: 42)
+    let fake = @["--a=1", "--v_1=9.9", "--v2=1", "--v3=2", "--v4=X", "--v5=t", "--v6=z", "--v7=true", "--food=PIZZA", "--help"]
+    fake.getOpt (a: int.high, v_1: 3.14, v2: 9'u64, v3: -9'i64, v4: "a", v5: '4', v6: cstring"b", v7: false, missing: 42, food: TACO)
     doAssert a == 1
     doAssert v_1 == 9.9
     doAssert v2 == 1'u64
@@ -158,11 +159,8 @@ runnableExamples:
     doAssert v5 == 't'
     doAssert v6 == cstring"z"
     doAssert v7 == true
-    doAssert missing == 42  ## missing is not in fake, fallback to default value 42.
-  block:
-    type Food = enum PIZZA, TACO  # Enum from CLI.
-    @["--food=PIZZA"].getOpt (food: TACO)
-    doAssert food is Food and food == PIZZA
+    doAssert missing == 42 # missing is not in fake, fallback to default value 42.
+    doAssert food is Food and food == PIZZA  # food is Food.PIZZA
   block:
     let fake = @["--a=false", "--b=5", "--c=1", "--d=2.0", "--e=3", "--f=128"]
     fake.getOpt (a: true, b: 9.Positive, c: 5.cint, d: 0.0.float32, e: 0.Natural, f: 255.byte)
