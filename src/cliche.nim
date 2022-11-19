@@ -159,13 +159,6 @@ runnableExamples:
     doAssert v7 == true
     doAssert missing == 42  ## missing is not in fake, fallback to default value 42.
   block:
-    @["--a=z"].getOpt (a: 'x')
-    doAssert a is char and a == 'z'
-    @["--foo=1", "--bar=2", "--baz=3"].getOpt (foo: 0, bar: 0.int32, baz: 0.uint64)
-    doAssert foo is int and foo == 1
-    doAssert bar is int32 and bar == 2
-    doAssert baz is uint64 and baz == 3
-  block:
     type Food = enum PIZZA, TACO  # Enum from CLI.
     @["--food=PIZZA"].getOpt (food: TACO)
     doAssert food is Food and food == PIZZA
