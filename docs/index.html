@@ -90,13 +90,6 @@
   <span class="Identifier">doAssert</span> <span class="Identifier">v7</span> <span class="Operator">==</span> <span class="Identifier">true</span>
   <span class="Identifier">doAssert</span> <span class="Identifier">missing</span> <span class="Operator">==</span> <span class="DecNumber">42</span>  <span class="Comment">## missing is not in fake, fallback to default value 42.</span>
 <span class="Keyword">block</span><span class="Punctuation">:</span>
-  <span class="Operator">@</span><span class="Punctuation">[</span><span class="StringLit">&quot;--a=z&quot;</span><span class="Punctuation">]</span><span class="Operator">.</span><span class="Identifier">getOpt</span> <span class="Punctuation">(</span><span class="Identifier">a</span><span class="Punctuation">:</span> <span class="CharLit">'x'</span><span class="Punctuation">)</span>
-  <span class="Identifier">doAssert</span> <span class="Identifier">a</span> <span class="Keyword">is</span> <span class="Identifier">char</span> <span class="Keyword">and</span> <span class="Identifier">a</span> <span class="Operator">==</span> <span class="CharLit">'z'</span>
-  <span class="Operator">@</span><span class="Punctuation">[</span><span class="StringLit">&quot;--foo=1&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;--bar=2&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;--baz=3&quot;</span><span class="Punctuation">]</span><span class="Operator">.</span><span class="Identifier">getOpt</span> <span class="Punctuation">(</span><span class="Identifier">foo</span><span class="Punctuation">:</span> <span class="DecNumber">0</span><span class="Punctuation">,</span> <span class="Identifier">bar</span><span class="Punctuation">:</span> <span class="FloatNumber">0.</span><span class="Identifier">int32</span><span class="Punctuation">,</span> <span class="Identifier">baz</span><span class="Punctuation">:</span> <span class="FloatNumber">0.</span><span class="Identifier">uint64</span><span class="Punctuation">)</span>
-  <span class="Identifier">doAssert</span> <span class="Identifier">foo</span> <span class="Keyword">is</span> <span class="Identifier">int</span> <span class="Keyword">and</span> <span class="Identifier">foo</span> <span class="Operator">==</span> <span class="DecNumber">1</span>
-  <span class="Identifier">doAssert</span> <span class="Identifier">bar</span> <span class="Keyword">is</span> <span class="Identifier">int32</span> <span class="Keyword">and</span> <span class="Identifier">bar</span> <span class="Operator">==</span> <span class="DecNumber">2</span>
-  <span class="Identifier">doAssert</span> <span class="Identifier">baz</span> <span class="Keyword">is</span> <span class="Identifier">uint64</span> <span class="Keyword">and</span> <span class="Identifier">baz</span> <span class="Operator">==</span> <span class="DecNumber">3</span>
-<span class="Keyword">block</span><span class="Punctuation">:</span>
   <span class="Keyword">type</span> <span class="Identifier">Food</span> <span class="Operator">=</span> <span class="Keyword">enum</span> <span class="Identifier">PIZZA</span><span class="Punctuation">,</span> <span class="Identifier">TACO</span>  <span class="Comment"># Enum from CLI.</span>
   <span class="Operator">@</span><span class="Punctuation">[</span><span class="StringLit">&quot;--food=PIZZA&quot;</span><span class="Punctuation">]</span><span class="Operator">.</span><span class="Identifier">getOpt</span> <span class="Punctuation">(</span><span class="Identifier">food</span><span class="Punctuation">:</span> <span class="Identifier">TACO</span><span class="Punctuation">)</span>
   <span class="Identifier">doAssert</span> <span class="Identifier">food</span> <span class="Keyword">is</span> <span class="Identifier">Food</span> <span class="Keyword">and</span> <span class="Identifier">food</span> <span class="Operator">==</span> <span class="Identifier">PIZZA</span>
@@ -147,7 +140,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-11-19 12:58:27 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-11-19 13:06:35 UTC</small>
       </div>
     </div>
   </div>
