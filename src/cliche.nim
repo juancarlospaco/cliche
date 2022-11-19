@@ -86,10 +86,8 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
 
   forBody.add(quote do:
     if not(v.len > 3) or v[0] != char(`prefix`) or v[1] != char(`prefix`): continue
-    if v.len == 6 and v[2] == 'h' and v[3] == 'e' and v[4] == 'l' and v[5] == 'p':
-      quit(`apiExplained`, 0)
-    if v.len == 8 and v[2] == 'x' and v[3] == 'd' and v[4] == 'e' and v[5] == 'b' and v[6] == 'u' and v[7] == 'g':
-      quit(`xdebugInfos`, 0)
+    if v.len == 6 and v[2] == 'h' and v[3] == 'e' and v[4] == 'l' and v[5] == 'p': quit(`apiExplained`, 0)
+    if v.len == 8 and v[2] == 'x' and v[3] == 'd' and v[4] == 'e' and v[5] == 'b' and v[6] == 'u' and v[7] == 'g': quit(`xdebugInfos`, 0)
     sepPos = v.len - 1
     for x in 2 ..< v.len:
       if v[x] == char(`sepa`):
