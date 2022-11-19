@@ -18,6 +18,7 @@ func explainHelp(params: NimNode; helpMessage: string; prefix, sepa: char): stri
               of nnkIntLit .. nnkInt64Lit:      "int"
               of nnkUintLit .. nnkUInt64Lit:    "uint"
               of nnkFloatLit .. nnkFloat128Lit: "float"
+              of nnkPrefix:                     "BackwardsIndex"
               elif element[1].kind == nnkIdent and (element[1].eqIdent"true" or element[1].eqIdent"false"): "bool"
               else: "string"
             )
@@ -26,8 +27,28 @@ func explainHelp(params: NimNode; helpMessage: string; prefix, sepa: char): stri
         result.add '\n'
     result.add prefix
     result.add prefix
+    result.add "xdebug\tDebug info for devs\n"
+    result.add prefix
+    result.add prefix
     result.add "help\t?\t"
     result.add helpMessage
+
+
+func xdebug(): string =
+  result = "nim\t"
+  result.add NimVersion
+  result.add "\ncpu\t"
+  result.add hostCPU
+  result.add "\nos\t"
+  result.add hostOS
+  result.add "\nrelease\t"
+  result.add $defined(release)
+  result.add "\ndanger\t"
+  result.add $defined(danger)
+  result.add "\nlto\t"
+  result.add $defined(lto)
+  result.add "\nstrip\t"
+  result.add $defined(strip)
 
 
 macro unrolledStringVsSymbolComparisonImpl(simbol: typed; value: static[string]): untyped =
@@ -40,7 +61,7 @@ macro unrolledStringVsSymbolComparisonImpl(simbol: typed; value: static[string])
 
 
 macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[string] = "";
-              sepa: static[char] = '='; prefix: static[char] = '-';) =
+              sepa: static[char] = '='; prefix: static[char] = '-'; useEnvVars: static[bool] = false) =
   doAssert variables.len > 0, "Argument must not be empty"
   doAssert variables.kind == nnkTupleConstr, "Argument must be 1 static named tuple"
   for n in variables: doAssert n.kind == nnkExprColonExpr, "Argument must be 1 static named tuple"
@@ -49,37 +70,37 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
     forBody = newStmtList()
     declarations = newStmtList()
     name, value: NimNode
+  let
+    apiExplained: string = explainHelp(variables, helpMessage, prefix, sepa)
+    xdebugInfos:  string = xdebug()
   result = newStmtList()
+  # for v in source:
   newFor.add ident"v"
-  newFor.add source  # for v in source:
-  forBody.add(       #   if v.len < 3 or v[0] != '-'  or v[1] != '-': continue
-    nnkIfStmt.newTree(nnkElifBranch.newTree(nnkInfix.newTree(newIdentNode"or", nnkInfix.newTree(newIdentNode"or", nnkInfix.newTree(
-      newIdentNode"<", nnkDotExpr.newTree(newIdentNode"v", newIdentNode"len"), newLit(3)), nnkInfix.newTree(newIdentNode"!=", nnkBracketExpr.newTree(newIdentNode"v", newLit(0)), newLit('-'))),
-      nnkInfix.newTree(newIdentNode"!=", nnkBracketExpr.newTree(newIdentNode"v", newLit(1)), newLit('-'))), nnkStmtList.newTree(nnkContinueStmt.newTree(newEmptyNode())))
-    )
+  newFor.add source
+  #   var sepPos: int
+  #   var k, b: string
+  forBody.add nnkVarSection.newTree(
+    nnkIdentDefs.newTree(newIdentNode"sepPos", newIdentNode("int"), newEmptyNode()),
+    nnkIdentDefs.newTree(newIdentNode"key", newIdentNode"val", newIdentNode"string", newEmptyNode())
   )
-
-  forBody.add(       #   let k_v = split(v, '=', 1)
-    nnkLetSection.newTree(nnkIdentDefs.newTree(newIdentNode"k_v", newEmptyNode(),
-      nnkCall.newTree(newIdentNode"split", newIdentNode"v", newLit(sepa), newLit(1))
-    ))  # Very likely it never needs >2 items in the seq[string] of k_v anyway.
-  )
-
-  forBody.add(  # let k = k_v[0][2..^1]
-    nnkLetSection.newTree(nnkIdentDefs.newTree(newIdentNode"k", newEmptyNode(),
-      nnkBracketExpr.newTree(nnkBracketExpr.newTree(newIdentNode"k_v", newLit(0)),
-        nnkInfix.newTree(newIdentNode"..^", newLit(2), newLit(1))
-      )         # First 2 char are '-' if it reaches here.
-    )
-  ))
-
-  let apiExplained: string = explainHelp(variables, helpMessage, prefix, sepa)
 
   forBody.add(quote do:
-    if k.len == 4 and k[0] == 'h' and k[1] == 'e' and k[2] == 'l' and k[3] == 'p':
+    if not(v.len > 3) or v[0] != char(`prefix`) or v[1] != char(`prefix`): continue
+    if v.len == 6 and v[2] == 'h' and v[3] == 'e' and v[4] == 'l' and v[5] == 'p':
       quit(`apiExplained`, 0)
+    if v.len == 8 and v[2] == 'x' and v[3] == 'd' and v[4] == 'e' and v[5] == 'b' and v[6] == 'u' and v[7] == 'g':
+      quit(`xdebugInfos`, 0)
+    sepPos = v.len - 1
+    for x in 2 ..< v.len:
+      if v[x] == char(`sepa`):
+        sepPos = x
+        break
+    key = v[2 .. sepPos - 1]
+    val = v[sepPos + 1 .. v.len - 1]
   )
-
+  # Can be replaced with this for `experimental:views` ?.
+  # k = v.toOpenArray 2, sepPos - 1
+  # b = v.toOpenArray sepPos + 1, v.len - 1
   for key_value in variables:
     name = key_value[0]
     doAssert validIdentifier name.strVal, "Names must be valid identifiers"
@@ -87,48 +108,50 @@ macro getOpt*(source: seq[string]; variables: untyped; helpMessage: static[strin
     value = key_value[1]
     doAssert value.kind != nnkNilLit, "Default value must not be static Nil"
 
+    if useEnvVars:
+      forBody.add(quote do:
+        val = getEnv("NIM_" & key.toUpperAscii, val)
+      )
+
     declarations.add(  # var name = defaultValue
       nnkVarSection.newTree(nnkIdentDefs.newTree(name, newEmptyNode(), value))
     )  # Make all variable declarations before the for loop itself.
 
     let literalParam = name.strVal
     forBody.add(quote do:
-      if unrolledStringVsSymbolComparisonImpl(k, `literalParam`):
-        `name` = (
-          when `value` is Positive:
-            (proc (c: string): Positive = c.parseInt.Positive)
-          elif `value` is Natural:
-            (proc (c: string): Natural = c.parseInt.Natural)
-          elif `value` is byte:
-            (proc (c: string): byte = c.parseInt.byte)
-          elif `value` is char:
-            (proc (c: string): char = c[0])
-          elif `value` is bool:
-            (proc (c: string): bool = c.parseBool)
-          elif `value` is SomeSignedInt:
-            (proc (c:string): typeof(`value`) = typeof(`value`)(c.parseInt))
-          elif `value` is SomeUnsignedInt:
-            (proc (c:string): typeof(`value`) = typeof(`value`)(c.parseUInt))
-          elif `value` is SomeFloat:
-            (proc (c: string): typeof(`value`) = typeof(`value`)(c.parseFloat))
-          elif `value` is cstring:  cstring
-          else:                     strip
-        )(k_v[1])
+      if unrolledStringVsSymbolComparisonImpl(key, `literalParam`):
+        `name` =
+          when `value` is Positive:        Positive(val.parseInt)
+          elif `value` is Natural:         Natural(val.parseInt)
+          elif `value` is BiggestUInt:     BiggestUInt(val.parseUint)
+          elif `value` is BiggestInt:      BiggestInt(val.parseInt)
+          elif `value` is BiggestFloat:    BiggestFloat(val.parseFloat)
+          elif `value` is BackwardsIndex:  BackwardsIndex(val.parseInt)
+          elif `value` is byte:            byte(val.parseInt)
+          elif `value` is char:            char(val[0])
+          elif `value` is cfloat:          cfloat(val.parseFloat)
+          elif `value` is float32:         float32(val.parseFloat)
+          elif `value` is float64:         float64(val.parseFloat)
+          elif `value` is float:           float(val.parseFloat)
+          elif `value` is cint:            cint(val.parseInt)
+          elif `value` is SomeSignedInt:   typeof(`value`)(val.parseInt)
+          elif `value` is SomeUnsignedInt: typeof(`value`)(val.parseUInt)
+          elif `value` is bool:            parseBool(val)
+          elif `value` is enum:            parseEnum[typeof(`value`)](val)
+          elif `value` is cstring:         cstring(val)
+          else:                            val
     )
-
   newFor.add forBody
   result.add declarations
   result.add newFor
 
 
-# runnableExamples:
-when isMainModule:
+runnableExamples:
   import std/strutils
   # Use https://nim-lang.github.io/Nim/os.html#commandLineParams
   # let real = commandLineParams()
   let fake = @["--a=1", "--v_1=9.9", "--v2=1", "--v3=2", "--v4=X", "--v5=t", "--v6=z", "--v7=true", "--help"]
-  expandMacros:
-    fake.getOpt (a: int.high, v_1: 3.14, v2: 9'u64, v3: -9'i64, v4: "a", v5: '4', v6: cstring"b", v7: false, missing: 42)
+  fake.getOpt (a: int.high, v_1: 3.14, v2: 9'u64, v3: -9'i64, v4: "a", v5: '4', v6: cstring"b", v7: false, missing: 42)
   doAssert a == 1
   doAssert v_1 == 9.9
   doAssert v2 == 1'u64
