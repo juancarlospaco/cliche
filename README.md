@@ -383,6 +383,7 @@ for v in commandLineParams():
 - No support for abbreviated CLI arguments (`--foo` in CLI is `foo` in code).
 - API just uses variables.
 - Supports `enum`, `Positive`, `Natural`, `BiggestUInt`, `BiggestInt`, `BiggestFloat`, `BackwardsIndex`, `byte`, `cint`, `cfloat`.
+- Fallbacks for values: static default :arrow_right: env var :arrow_right: command line
 
 
 # Stars
