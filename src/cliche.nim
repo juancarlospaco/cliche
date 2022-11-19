@@ -1,3 +1,4 @@
+## .. image:: https://raw.githubusercontent.com/juancarlospaco/cliche/nim/cliche-banner.jpg
 import std/[macros, strutils]
 
 
