@@ -183,3 +183,9 @@ runnableExamples:
   doAssert foo is int and foo == 1
   doAssert bar is int32 and bar == 2
   doAssert baz is uint64 and baz == 3
+
+runnableExamples:
+  import std/strutils
+  type Food = enum PIZZA, TACO  # Enum from CLI.
+  @["--food=PIZZA"].getOpt (food: TACO)
+  doAssert food is Food and food == PIZZA
