@@ -52,11 +52,11 @@
     <summary><a class="reference reference-toplevel" href="#17" id="67">Macros</a></summary>
     <ul class="simple simple-toc-section">
       <ul class="simple nested-toc-section">getOpt
-  <li><a class="reference" href="#getOpt.m%2Cseq%5Bstring%5D%2Cuntyped%2Cstatic%5Bstring%5D%2Cstatic%5Bchar%5D%2Cstatic%5Bchar%5D" title="getOpt(source: seq[string]; variables: untyped;
+  <li><a class="reference" href="#getOpt.m%2Cseq%5Bstring%5D%2Cuntyped%2Cstatic%5Bstring%5D%2Cstatic%5Bchar%5D%2Cstatic%5Bchar%5D%2Cstatic%5Bbool%5D" title="getOpt(source: seq[string]; variables: untyped;
        helpMessage: static[string] = &quot;&quot;; sepa: static[char] = '=';
-       prefix: static[char] = '-')">getOpt(source: seq[string]; variables: untyped;
+       prefix: static[char] = '-'; useEnvVars: static[bool] = false)">getOpt(source: seq[string]; variables: untyped;
        helpMessage: static[string] = &quot;&quot;; sepa: static[char] = '=';
-       prefix: static[char] = '-')</a></li>
+       prefix: static[char] = '-'; useEnvVars: static[bool] = false)</a></li>
 
 </ul>
 
@@ -108,15 +108,21 @@
 <span class="Operator">@</span><span class="Punctuation">[</span><span class="StringLit">&quot;--foo=1&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;--bar=2&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;--baz=3&quot;</span><span class="Punctuation">]</span><span class="Operator">.</span><span class="Identifier">getOpt</span> <span class="Punctuation">(</span><span class="Identifier">foo</span><span class="Punctuation">:</span> <span class="DecNumber">0</span><span class="Punctuation">,</span> <span class="Identifier">bar</span><span class="Punctuation">:</span> <span class="FloatNumber">0.</span><span class="Identifier">int32</span><span class="Punctuation">,</span> <span class="Identifier">baz</span><span class="Punctuation">:</span> <span class="FloatNumber">0.</span><span class="Identifier">uint64</span><span class="Punctuation">)</span>
 <span class="Identifier">doAssert</span> <span class="Identifier">foo</span> <span class="Keyword">is</span> <span class="Identifier">int</span> <span class="Keyword">and</span> <span class="Identifier">foo</span> <span class="Operator">==</span> <span class="DecNumber">1</span>
 <span class="Identifier">doAssert</span> <span class="Identifier">bar</span> <span class="Keyword">is</span> <span class="Identifier">int32</span> <span class="Keyword">and</span> <span class="Identifier">bar</span> <span class="Operator">==</span> <span class="DecNumber">2</span>
-<span class="Identifier">doAssert</span> <span class="Identifier">baz</span> <span class="Keyword">is</span> <span class="Identifier">uint64</span> <span class="Keyword">and</span> <span class="Identifier">baz</span> <span class="Operator">==</span> <span class="DecNumber">3</span></pre></p>
+<span class="Identifier">doAssert</span> <span class="Identifier">baz</span> <span class="Keyword">is</span> <span class="Identifier">uint64</span> <span class="Keyword">and</span> <span class="Identifier">baz</span> <span class="Operator">==</span> <span class="DecNumber">3</span></pre>
+<p><strong class="examples_text">Example:</strong></p>
+<pre class="listing"><span class="Keyword">import</span> <span class="Identifier">src</span><span class="Operator">/</span><span class="Identifier">cliche</span>
+<span class="Keyword">import</span> <span class="Identifier">std</span><span class="Operator">/</span><span class="Identifier">strutils</span>
+<span class="Keyword">type</span> <span class="Identifier">Food</span> <span class="Operator">=</span> <span class="Keyword">enum</span> <span class="Identifier">PIZZA</span><span class="Punctuation">,</span> <span class="Identifier">TACO</span>  <span class="Comment"># Enum from CLI.</span>
+<span class="Operator">@</span><span class="Punctuation">[</span><span class="StringLit">&quot;--food=PIZZA&quot;</span><span class="Punctuation">]</span><span class="Operator">.</span><span class="Identifier">getOpt</span> <span class="Punctuation">(</span><span class="Identifier">food</span><span class="Punctuation">:</span> <span class="Identifier">TACO</span><span class="Punctuation">)</span>
+<span class="Identifier">doAssert</span> <span class="Identifier">food</span> <span class="Keyword">is</span> <span class="Identifier">Food</span> <span class="Keyword">and</span> <span class="Identifier">food</span> <span class="Operator">==</span> <span class="Identifier">PIZZA</span></pre></p>
     <div class="section" id="17">
   <h1><a class="toc-backref" href="#17">Macros</a></h1>
   <dl class="item">
     <div id="getOpt-macros-all">
-  <div id="getOpt.m,seq[string],untyped,static[string],static[char],static[char]">
-  <dt><pre><span class="Keyword">macro</span> <a href="#getOpt.m%2Cseq%5Bstring%5D%2Cuntyped%2Cstatic%5Bstring%5D%2Cstatic%5Bchar%5D%2Cstatic%5Bchar%5D"><span class="Identifier">getOpt</span></a><span class="Other">(</span><span class="Identifier">source</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">variables</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span>
+  <div id="getOpt.m,seq[string],untyped,static[string],static[char],static[char],static[bool]">
+  <dt><pre><span class="Keyword">macro</span> <a href="#getOpt.m%2Cseq%5Bstring%5D%2Cuntyped%2Cstatic%5Bstring%5D%2Cstatic%5Bchar%5D%2Cstatic%5Bchar%5D%2Cstatic%5Bbool%5D"><span class="Identifier">getOpt</span></a><span class="Other">(</span><span class="Identifier">source</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">variables</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span>
              <span class="Identifier">helpMessage</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">;</span> <span class="Identifier">sepa</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">char</span><span class="Other">]</span> <span class="Other">=</span> <span class="CharLit">'='</span><span class="Other">;</span>
-             <span class="Identifier">prefix</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">char</span><span class="Other">]</span> <span class="Other">=</span> <span class="CharLit">'-'</span><span class="Other">)</span></pre></dt>
+             <span class="Identifier">prefix</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">char</span><span class="Other">]</span> <span class="Other">=</span> <span class="CharLit">'-'</span><span class="Other">;</span> <span class="Identifier">useEnvVars</span><span class="Other">:</span> <span class="Identifier">static</span><span class="Other">[</span><span class="Identifier">bool</span><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">)</span></pre></dt>
   <dd>
     
     
@@ -135,7 +141,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-11-18 14:14:52 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-11-19 01:40:51 UTC</small>
       </div>
     </div>
   </div>
