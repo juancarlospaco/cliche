@@ -453,3 +453,4 @@ for v in commandLineParams():
 :star: [@fartek](https://github.com/fartek '2023-04-10')	
 :star: [@peterhil](https://github.com/peterhil '2023-05-09')	
 :star: [@nschlemm](https://github.com/nschlemm '2023-05-13')	
+:star: [@KolyaRS](https://github.com/KolyaRS '2023-09-05')	
