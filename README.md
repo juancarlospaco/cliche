@@ -483,3 +483,4 @@ for v in commandLineParams():
 :star: [@titanomachy](https://github.com/titanomachy '2025-02-25')	
 :star: [@nimelias](https://github.com/nimelias '2025-03-26')	
 :star: [@aocoronel](https://github.com/aocoronel '2025-08-31')	
+:star: [@emansije](https://github.com/emansije '2026-01-18')	
